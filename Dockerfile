@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including devDependencies needed for build)
+# Install dependencies
 RUN npm ci
 
 # Copy source code
@@ -16,7 +16,7 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Remove devDependencies after build
+# Remove devDependencies to keep the final image lean
 RUN npm prune --production
 
 # Expose the port
