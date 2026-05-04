@@ -34,6 +34,7 @@ import { GHLConfig } from './types/ghl-types';
 import { ProductsTools } from './tools/products-tools.js';
 import { PaymentsTools } from './tools/payments-tools.js';
 import { InvoicesTools } from './tools/invoices-tools.js';
+import { FunnelTools } from './tools/funnel-tools.js';
 
 // Load environment variables
 dotenv.config();
@@ -63,6 +64,7 @@ class GHLMCPServer {
   private productsTools: ProductsTools;
   private paymentsTools: PaymentsTools;
   private invoicesTools: InvoicesTools;
+  private funnelTools: FunnelTools;
 
   constructor() {
     // Initialize MCP server with capabilities
@@ -101,6 +103,7 @@ class GHLMCPServer {
     this.productsTools = new ProductsTools(this.ghlClient);
     this.paymentsTools = new PaymentsTools(this.ghlClient);
     this.invoicesTools = new InvoicesTools(this.ghlClient);
+    this.funnelTools = new FunnelTools(this.ghlClient);
 
     // Setup MCP handlers
     this.setupHandlers();
@@ -163,7 +166,8 @@ class GHLMCPServer {
         const productsToolDefinitions = this.productsTools.getTools();
         const paymentsToolDefinitions = this.paymentsTools.getTools();
         const invoicesToolDefinitions = this.invoicesTools.getTools();
-        
+        const funnelToolDefinitions = this.funnelTools.getTools();
+
         const allTools = [
           ...contactToolDefinitions,
           ...conversationToolDefinitions,
@@ -183,7 +187,8 @@ class GHLMCPServer {
           ...storeToolDefinitions,
           ...productsToolDefinitions,
           ...paymentsToolDefinitions,
-          ...invoicesToolDefinitions
+          ...invoicesToolDefinitions,
+          ...funnelToolDefinitions
         ];
         
         process.stderr.write(`[GHL MCP] Registered ${allTools.length} tools total:\n`);
@@ -206,6 +211,7 @@ class GHLMCPServer {
         process.stderr.write(`[GHL MCP] - ${productsToolDefinitions.length} products tools\n`);
         process.stderr.write(`[GHL MCP] - ${paymentsToolDefinitions.length} payments tools\n`);
         process.stderr.write(`[GHL MCP] - ${invoicesToolDefinitions.length} invoices tools\n`);
+        process.stderr.write(`[GHL MCP] - ${funnelToolDefinitions.length} funnel tools\n`);
         
         return {
           tools: allTools
@@ -268,6 +274,8 @@ class GHLMCPServer {
           result = await this.paymentsTools.handleToolCall(name, args || {});
         } else if (this.isInvoicesTool(name)) {
           result = await this.invoicesTools.handleToolCall(name, args || {});
+        } else if (this.isFunnelTool(name)) {
+          result = await this.funnelTools.executeFunnelTool(name, args || {});
         } else {
           throw new Error(`Unknown tool: ${name}`);
         }
@@ -599,6 +607,18 @@ class GHLMCPServer {
   }
 
 
+
+  /**
+   * Check if tool name belongs to funnel tools
+   */
+  private isFunnelTool(toolName: string): boolean {
+    const funnelToolNames = [
+      'ghl_list_funnels',
+      'ghl_get_funnel_pages',
+      'ghl_get_funnel_count'
+    ];
+    return funnelToolNames.includes(toolName);
+  }
 
   /**
    * Test GHL API connection

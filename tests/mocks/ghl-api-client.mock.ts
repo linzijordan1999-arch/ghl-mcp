@@ -3,15 +3,17 @@
  * Provides realistic test data without making actual API calls
  */
 
-import { 
-  GHLApiResponse, 
-  GHLContact, 
-  GHLConversation, 
+import {
+  GHLApiResponse,
+  GHLContact,
+  GHLConversation,
   GHLMessage,
   GHLBlogPost,
   GHLBlogSite,
   GHLBlogAuthor,
-  GHLBlogCategory
+  GHLBlogCategory,
+  GHLFunnel,
+  GHLFunnelPage
 } from '../../src/types/ghl-types.js';
 
 // Mock test data
@@ -94,6 +96,33 @@ export const mockBlogCategory: GHLBlogCategory = {
   updatedAt: '2024-01-01T00:00:00.000Z',
   canonicalLink: 'https://example.com/category/test',
   urlSlug: 'test-category'
+};
+
+export const mockFunnel: GHLFunnel = {
+  id: 'funnel_123',
+  name: 'Test Funnel',
+  locationId: 'test_location_123',
+  type: 'funnel',
+  status: 'active',
+  url: 'https://example.com/funnel/test',
+  pageCount: 3,
+  domainList: ['example.com'],
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z'
+};
+
+export const mockFunnelPage: GHLFunnelPage = {
+  id: 'fpage_123',
+  funnelId: 'funnel_123',
+  name: 'Landing Page',
+  stepId: 1,
+  type: 'page',
+  url: 'https://example.com/funnel/test/landing',
+  status: 'published',
+  pageType: 'opt-in',
+  sequenceOrder: 1,
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z'
 };
 
 /**
@@ -305,6 +334,39 @@ export class MockGHLApiClient {
       data: {
         status: 'connected',
         locationId: this.config.locationId
+      }
+    };
+  }
+
+  // Funnel methods
+  async listFunnels(params: any): Promise<GHLApiResponse<any>> {
+    return {
+      success: true,
+      data: {
+        funnels: [mockFunnel],
+        count: 1
+      }
+    };
+  }
+
+  async getFunnelPages(params: any): Promise<GHLApiResponse<any>> {
+    if (params.funnelId === 'not_found') {
+      throw new Error('GHL API Error (404): Funnel not found');
+    }
+    return {
+      success: true,
+      data: {
+        pages: [mockFunnelPage],
+        total: 1
+      }
+    };
+  }
+
+  async getFunnelCount(params: any): Promise<GHLApiResponse<any>> {
+    return {
+      success: true,
+      data: {
+        count: 5
       }
     };
   }
