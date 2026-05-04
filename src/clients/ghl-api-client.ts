@@ -380,7 +380,14 @@ import {
   CreateInvoiceDto,
   CreateInvoiceResponseDto,
   ListInvoicesResponseDto,
-  AltDto
+  AltDto,
+  // Funnel API types
+  GHLListFunnelsRequest,
+  GHLListFunnelsResponse,
+  GHLGetFunnelPagesRequest,
+  GHLGetFunnelPagesResponse,
+  GHLGetFunnelCountRequest,
+  GHLGetFunnelCountResponse
 } from '../types/ghl-types.js';
 
 /**
@@ -6823,6 +6830,69 @@ export class GHLApiClient {
         { params: queryParams }
       );
 
+      return this.wrapResponse(response.data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ===== FUNNEL API METHODS =====
+
+  async listFunnels(params: GHLListFunnelsRequest): Promise<GHLApiResponse<GHLListFunnelsResponse>> {
+    try {
+      const queryParams: Record<string, any> = {
+        locationId: params.locationId || this.config.locationId
+      };
+      if (params.name) queryParams.name = params.name;
+      if (params.search) queryParams.search = params.search;
+      if (params.status) queryParams.status = params.status;
+      if (params.type) queryParams.type = params.type;
+      if (params.limit) queryParams.limit = params.limit;
+      if (params.offset) queryParams.offset = params.offset;
+
+      const response: AxiosResponse<GHLListFunnelsResponse> = await this.axiosInstance.get(
+        '/funnels/funnel/list',
+        { params: queryParams }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getFunnelPages(params: GHLGetFunnelPagesRequest): Promise<GHLApiResponse<GHLGetFunnelPagesResponse>> {
+    try {
+      const queryParams: Record<string, any> = {
+        locationId: params.locationId || this.config.locationId,
+        funnelId: params.funnelId
+      };
+      if (params.name) queryParams.name = params.name;
+      if (params.limit) queryParams.limit = params.limit;
+      if (params.offset) queryParams.offset = params.offset;
+
+      const response: AxiosResponse<GHLGetFunnelPagesResponse> = await this.axiosInstance.get(
+        '/funnels/page',
+        { params: queryParams }
+      );
+      return this.wrapResponse(response.data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getFunnelCount(params: GHLGetFunnelCountRequest): Promise<GHLApiResponse<GHLGetFunnelCountResponse>> {
+    try {
+      const queryParams: Record<string, any> = {
+        locationId: params.locationId || this.config.locationId
+      };
+      if (params.type) queryParams.type = params.type;
+      if (params.search) queryParams.search = params.search;
+      if (params.status) queryParams.status = params.status;
+
+      const response: AxiosResponse<GHLGetFunnelCountResponse> = await this.axiosInstance.get(
+        '/funnels/funnel/count',
+        { params: queryParams }
+      );
       return this.wrapResponse(response.data);
     } catch (error) {
       throw error;

@@ -6686,3 +6686,96 @@ export interface CreateInvoiceResponseDto extends DefaultInvoiceResponseDto {}
 export interface UpdateInvoiceResponseDto extends DefaultInvoiceResponseDto {}
 export interface DeleteInvoiceResponseDto extends DefaultInvoiceResponseDto {}
 export interface VoidInvoiceResponseDto extends DefaultInvoiceResponseDto {}
+
+// ===== FUNNEL TYPES =====
+
+export interface GHLFunnel {
+  id: string;
+  name: string;
+  locationId: string;
+  type: string;
+  status: string;
+  url?: string;
+  pageCount?: number;
+  domainList?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface GHLFunnelPage {
+  id: string;
+  funnelId: string;
+  name: string;
+  stepId?: number;
+  type?: string;
+  url?: string;
+  status?: string;
+  pageType?: string;
+  sequenceOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface GHLListFunnelsRequest {
+  locationId: string;
+  name?: string;
+  search?: string;
+  status?: string;
+  type?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface GHLListFunnelsResponse {
+  funnels: GHLFunnel[];
+  count: number;
+}
+
+export interface GHLGetFunnelPagesRequest {
+  locationId: string;
+  funnelId: string;
+  name?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface GHLGetFunnelPagesResponse {
+  pages: GHLFunnelPage[];
+  total: number;
+}
+
+export interface GHLGetFunnelCountRequest {
+  locationId: string;
+  type?: string;
+  search?: string;
+  status?: string;
+}
+
+export interface GHLGetFunnelCountResponse {
+  count: number;
+}
+
+export interface MCPListFunnelsParams {
+  locationId?: string;
+  name?: string;
+  search?: string;
+  status?: string;
+  type?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface MCPGetFunnelPagesParams {
+  locationId?: string;
+  funnelId: string;
+  name?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface MCPGetFunnelCountParams {
+  locationId?: string;
+  type?: string;
+  search?: string;
+  status?: string;
+}
